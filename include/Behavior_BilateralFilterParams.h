@@ -11,23 +11,32 @@ class Behavior_BilateralFilterParams : public PSO_Behavior
 {
     public:
         Behavior_BilateralFilterParams();
-        virtual ~Behavior_BilateralFilterParams();
+        ~Behavior_BilateralFilterParams();
 
-        Particle* iteration(int,int,Particle *);
-        Particle* initial(Particle *,int,int &);
-        //void choseBestSocialParticle(Particle *,int,int &);
-        //void updateBestParticleSelf(Particle &);
-        double computePoint(Particle);
-        Particle getBestParticle(Particle*);
+        void iteration(int,int,Particle *) override;
+        void initial(Particle *,int) override;
+        double computePoint(Particle) override;
+        Particle getBestParticle(Particle*) override;
+        void setFittnessFunction(double*,double*);
+        void setOriginVariance(double);
+        void setSmoothLevel(int);
+
+        static const int SMOOTH;
+        static const int LITTLE_SMOOTH;
+        static const int NOT_SMOOTH;
 
     private:
-        double w;
-        double c1;
-        double c2;
+        double w = 1.0;
+        double c1 = 0.5;
+        double c2 = 0.5;
         int bestIndex;
         double* upperBound;
         double* lowerBound;
         int dim;
+        double *param1;
+        double *param2;
+        double originVariance;
+        int SMOOTH_LEVEL = 1;
 };
 
 #endif // BEHAVIOR_BILATERALFILTERPARAMS_H

@@ -1,5 +1,6 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
+#include <iostream>
 
 //int Dim = 3;
 
@@ -8,7 +9,7 @@ class Particle
     public:
         Particle();
         Particle(int dim);
-        virtual ~Particle();
+        ~Particle();
 
         double* getBestLocation();
         double* getCurrentLocation();

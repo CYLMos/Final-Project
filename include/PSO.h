@@ -3,15 +3,17 @@
 
 #include "Particle.h"
 #include "PSO_Behavior.h"
+#include "Behavior_BilateralFilterParams.h"
 #include <iostream>
 
 class PSO
 {
     public:
         PSO(int);
-        virtual ~PSO();
+        ~PSO();
         void startOptimization(int);
         void setBehavior(PSO_Behavior* behavior);
+        void getBestParticle(double*);
 
     protected:
 
@@ -19,7 +21,6 @@ class PSO
         Particle *particleArray;
         PSO_Behavior *behavior;
         int count;
-        int index;
 };
 
 #endif // PSO_H

@@ -14,7 +14,6 @@ Particle::Particle(int dim)
 
 Particle::~Particle()
 {
-    //dtor
 }
 
 void Particle::setDim(int dim){
@@ -40,15 +39,18 @@ double Particle::getPoint(){
 }
 
 void Particle::setBestLocation(double* location){
-    this->bestLocation = location;
+    this->bestLocation[0] = location[0];
+    this->bestLocation[1] = location[1];
 }
 
 void Particle::setCurrentLocation(double* location){
-    this->currentLocation = location;
+    this->currentLocation[0] = location[0];
+    this->currentLocation[1] = location[1];
 }
 
 void Particle::setVelocity(double* velocity){
-    this->velocity = velocity;
+    this->velocity[0] = velocity[0];
+    this->velocity[1] = velocity[1];
 }
 
 void Particle::setPoint(double point){

@@ -6,7 +6,7 @@ PSO::PSO(int count)
     this->particleArray = new Particle[count];
 
     for(int i = 0; i < count; i++){
-        this->particleArray[i].setDim(3);
+        this->particleArray[i].setDim(2);
     }
 }
 
@@ -17,23 +17,25 @@ PSO::~PSO()
 }
 
 void PSO::startOptimization(int times){
-    this->particleArray = behavior->initial(this->particleArray,this->count,this->index);
-    this->particleArray = behavior->iteration(times,this->count,this->particleArray);
+    behavior->initial(this->particleArray,this->count);
+    behavior->iteration(times,this->count,this->particleArray);
 
-    Particle best = behavior->getBestParticle(this->particleArray);
-    double* location = best.getCurrentLocation();
-    double* blocation = best.getBestLocation();
-    double* v = best.getVelocity();
-    double point = best.getPoint();
-
-    std::cout << "current location: " << location[0] << " " << location[1] << " " << location[2] << std::endl;
-    std::cout << "best location: " << blocation[0] << " " << blocation[1] << " " << blocation[2] << std::endl;
-    std::cout << "v: " << v[0] << " " << v[1] << " " << v[2] << std::endl;
-    std::cout << "point: " << point;
-
-    delete [] location,blocation,v;
+    std::cout << "the points of the particles: " << std::endl;
+    for(int i = 0; i < this->count; i++){
+        std::cout << "index " << i << ": " << particleArray[i].getPoint() << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void PSO::setBehavior(PSO_Behavior *behavior){
     this->behavior = behavior;
+}
+
+void PSO::getBestParticle(double *location){
+    Particle p = behavior->getBestParticle(this->particleArray);
+    double* currentLocation = p.getCurrentLocation();
+    location[0] = currentLocation[0];
+    location[1] = currentLocation[1];
+    std::cout << "Point:" << p.getPoint() << std::endl;
+    delete currentLocation;
 }
