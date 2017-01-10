@@ -63,7 +63,7 @@ int main()
 
     for(int i = 0; i < sizeof(p2)/sizeof(p2[0]); i++){
         Mat mat;
-        bilateralFilter(src_gray,mat,1,p2[i],100);
+        bilateralFilter(src_gray,mat,1,p2[i],10);
         //double v = getVariance(mat);
         r2[i] = getVariance(mat);
         cout << "sc_variance: " << r2[i] << endl;
@@ -77,7 +77,7 @@ int main()
 
     PSO *pso = new PSO(15);
     Behavior_BilateralFilterParams behavior; //= new Behavior_BilateralFilterParams();
-    behavior.setFittnessFunction(a1,a2);
+    behavior.setFittnessFunction(a1,a2,2);
     behavior.setOriginVariance(variance);
 
     if(variance < SMOOTH){
@@ -91,7 +91,7 @@ int main()
     }
 
     pso->setBehavior(&behavior);
-    pso->startOptimization(80);
+    pso->startOptimization(50);
 
     double *location = new double[2];
     pso->getBestParticle(location);
@@ -100,8 +100,10 @@ int main()
 
     bilateralFilter(src_gray,src_smooth,location[0],location[1],10);
     cout << "smooth variance: " << getVariance(src_smooth) << endl;
-    cout << "d function result: " << a2[0] + location[1]*a2[1] << endl;
-    cout << "sigmaColor function result: " << a1[0] + location[0]*a1[1] << endl;
+    double d_f = a1[0] + location[0]*a1[1];
+    double s_f = a2[0] + location[1]*a2[1];
+    cout << "d function result: " << d_f << endl;
+    cout << "sigmaColor function result: " << s_f << endl;
 
     namedWindow("smooth",WINDOW_AUTOSIZE);
     namedWindow("origin",WINDOW_AUTOSIZE);

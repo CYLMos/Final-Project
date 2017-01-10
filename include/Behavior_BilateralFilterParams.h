@@ -15,9 +15,9 @@ class Behavior_BilateralFilterParams : public PSO_Behavior
 
         void iteration(int,int,Particle *) override;
         void initial(Particle *,int) override;
-        double computePoint(Particle) override;
+        double computePoint(double *location) override;
         Particle getBestParticle(Particle*) override;
-        void setFittnessFunction(double*,double*);
+        void setFittnessFunction(double*,double*,int);
         void setOriginVariance(double);
         void setSmoothLevel(int);
 

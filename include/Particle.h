@@ -15,10 +15,12 @@ class Particle
         double* getCurrentLocation();
         double* getVelocity();
         double getPoint();
+        double getBestPoint();
         void setBestLocation(double*);
         void setCurrentLocation(double*);
         void setVelocity(double*);
         void setPoint(double);
+        void setBestPoint(double);
 
         void setDim(int);
 
@@ -27,6 +29,7 @@ class Particle
         double* currentLocation;
         double* velocity;
         double point;
+        double bestPoint;
 };
 
 #endif // PARTICLE_H

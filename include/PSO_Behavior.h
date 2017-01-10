@@ -13,7 +13,7 @@ class PSO_Behavior
 
         virtual Particle getBestParticle(Particle *) = 0;
 
-        virtual double computePoint(Particle) = 0;
+        virtual double computePoint(double* location) = 0;
 };
 
 #endif // PSO_BEHAVIOR_H

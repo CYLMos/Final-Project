@@ -18,13 +18,20 @@ Behavior_BilateralFilterParams::Behavior_BilateralFilterParams()
 
     this->lowerBound[0] = 1;
     this->lowerBound[1] = 10;
+
+    this->param1 = NULL;
+    this->param2 = NULL;
 }
 
 Behavior_BilateralFilterParams::~Behavior_BilateralFilterParams()
 {
+    delete this->upperBound;
+    delete this->lowerBound;
+    delete this->param1;
+    delete this->param2;
 }
 
-void Behavior_BilateralFilterParams::initial(Particle* particleArray,int length){
+void Behavior_BilateralFilterParams::initial(Particle *particleArray,int length){
     srand((unsigned)time(NULL));
 
     for(int i = 0; i < length; i++){
@@ -33,17 +40,19 @@ void Behavior_BilateralFilterParams::initial(Particle* particleArray,int length)
         double randArray[2] = {rand1,rand2};
         double randArray_v[2] = {rand1,rand2};
 
+
         particleArray[i].setBestLocation(randArray);
         particleArray[i].setCurrentLocation(randArray);
         particleArray[i].setVelocity(randArray_v);
 
-        particleArray[i].setPoint(computePoint(particleArray[i]));
+        particleArray[i].setPoint(computePoint(randArray));
+        particleArray[i].setBestPoint(computePoint(randArray));
     }
 
     double bestPoint;
     for(int i = 0; i < length; i++){
         if(i == 0){
-            bestPoint = particleArray[i].getPoint();
+            bestPoint = particleArray[i].getBestPoint();
             this->bestIndex = i;
         }
         else if(particleArray[i].getPoint() < bestPoint){
@@ -57,7 +66,7 @@ void Behavior_BilateralFilterParams::iteration(int times,int count,Particle *par
     srand((unsigned)time(NULL));
 
     for(int i = 0; i < times; i++){
-        double *socialBestLocation = particleArray[this->bestIndex].getCurrentLocation();
+        double *socialBestLocation = particleArray[this->bestIndex].getBestLocation();
         for(int p_index = 0; p_index < count; p_index++){
 
             double *velocity = particleArray[p_index].getVelocity();
@@ -87,21 +96,23 @@ void Behavior_BilateralFilterParams::iteration(int times,int count,Particle *par
                     currentLocation[1] = this->lowerBound[1];
             }
             particleArray[p_index].setCurrentLocation(currentLocation);
-            double point = computePoint(particleArray[p_index]);
+            double point = computePoint(currentLocation);
             particleArray[p_index].setPoint(point);
+            if(particleArray[p_index].getBestPoint() > point){
+                particleArray[p_index].setBestPoint(point);
+                particleArray[p_index].setBestLocation(currentLocation);
+            }
 
             velocity = NULL;
             currentLocation = NULL;
             bestLocation = NULL;
-            delete velocity,currentLocation,bestLocation;
         }
         socialBestLocation = NULL;
-        delete socialBestLocation;
 
         double bestPoint = 1000.0;
         int previousIndex = this->bestIndex;
         for(int j = 0; j < count; j++){
-            if(particleArray[j].getPoint() <= particleArray[previousIndex].getPoint() && particleArray[j].getPoint() < bestPoint){
+            if(particleArray[j].getPoint() <= particleArray[previousIndex].getBestPoint() && particleArray[j].getPoint() < bestPoint){
                 bestPoint = particleArray[j].getPoint();
                 this->bestIndex = j;
             }
@@ -114,39 +125,49 @@ Particle Behavior_BilateralFilterParams::getBestParticle(Particle* particleArray
     return particleArray[this->bestIndex];
 }
 
-double Behavior_BilateralFilterParams::computePoint(Particle particle){
+double Behavior_BilateralFilterParams::computePoint(double *currentLocation){
     double level = 0.0;
+    double w1 = 0.0,w2 = 0.0;
     switch(this->SMOOTH_LEVEL){
         case SMOOTH:
             level = 0.8;
+            w1 = 0.45;
+            w2 = 0.5;
             break;
         case LITTLE_SMOOTH:
             level = 0.65;
+            w1 = 0.1;
+            w2 = 0.68;
             break;
         case NOT_SMOOTH:
             level = 0.3;
+            w1 = 0.1;
+            w2 = 0.3;
             break;
         default:
             level = 0.65;
             break;
     }
-    double* currentLocation = particle.getCurrentLocation();
     double point1 = this->param1[0] + currentLocation[0] * this->param1[1];
     double point2 = this->param2[0] + currentLocation[1] * this->param2[1];
 
-    double variance = (0.1*point1) + (0.8*point2);
+    double variance = (w1*point1) + (w2*point2);
     double v = this->originVariance*level;
     double result = (v - variance) > 0 ? (v - variance) : (v - variance)*-1;
 
     currentLocation = NULL;
-    delete currentLocation;
 
     return result;
 }
 
-void Behavior_BilateralFilterParams::setFittnessFunction(double *param1,double *param2){
-    this->param1 = param1;
-    this->param2 = param2;
+void Behavior_BilateralFilterParams::setFittnessFunction(double *param1,double *param2,int size){
+    this->param1 = new double[size];
+    this->param2 = new double[size];
+
+    for(int i = 0; i < size; i++){
+        this->param1[i] = param1[i];
+        this->param2[i] = param2[i];
+    }
 }
 
 void Behavior_BilateralFilterParams::setOriginVariance(double value){
